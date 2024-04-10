@@ -7,39 +7,44 @@ const images = [
   { url: "https://picsum.photos/id/238/200/300" },
   { url: "https://picsum.photos/id/239/200/300" },
 ];
+// Function to download and display images
 function downloadAndDisplayImages(images) {
-        const promises = [];
+  // Clear the existing content in the output div
+  output.innerHTML = '';
 
-        images.forEach(image => {
-          const promise = new Promise((resolve, reject) => {
-            fetch(image.url)
-              .then(response => {
-                if (!response.ok) {
-                  reject(new Error(`Failed to load image's URL: ${image.url}`));
-                }
-                const imgElement = document.createElement('img');
-                imgElement.src = image.url;
-                output.appendChild(imgElement);
-                resolve();
-              })
-              .catch(error => {
-                reject(error);
-              });
-          });
+  // Create promises for each image download
+  const promises = images.map(image => {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.src = image.url;
+      img.onload = () => {
+        // Once image is loaded, append it to the output div
+        output.appendChild(img);
+        resolve();
+      };
+      img.onerror = () => {
+        // If image fails to load, reject the promise with an error
+        reject(new Error(`Failed to load image's URL: ${image.url}`));
+      };
+    });
+  });
 
-          promises.push(promise);
-        });
+  // Return a promise that resolves when all images are downloaded and displayed
+  return Promise.all(promises);
+}
 
-        return Promise.all(promises);
-      }
+// Add click event listener to the button
+btn.addEventListener("click", () => {
+  // Call the function to download and display images
+  downloadAndDisplayImages(images)
+    .then(() => {
+      console.log("Images downloaded and displayed successfully.");
+    })
+    .catch(error => {
+      console.error("Error downloading and displaying images:", error.message);
+    });
+});
 
-      btn.addEventListener("click", () => {
-        downloadAndDisplayImages(images)
-          .then(() => {
-            console.log("All images downloaded successfully.");
-          })
-          .catch(error => {
-            console.error("Error downloading images:", error.message);
-          });
-      });
+
+
 
