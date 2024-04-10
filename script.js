@@ -38,7 +38,7 @@ const images = [
     function displayImages(downloadedImages) {
         // Clear the existing content of the output div
         output.innerHTML = "";
-        // Append each downloaded image to the output div
+        
         downloadedImages.forEach(image => {
             output.appendChild(image);
         });
